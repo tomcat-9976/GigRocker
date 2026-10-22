@@ -6,6 +6,17 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-22: Runbook lessons from the first production release (PR #4)
+
+Documentation only; no code or database changes.
+
+### Changed
+- `docs/database.md`: the production release steps are now a numbered table, run one command at a time, with a check after each. They include confirming which project the CLI is linked to straight after linking, and a `git status` check that you're on an up-to-date `main`.
+
+### Added
+- `docs/database.md`: a Troubleshooting section covering "Remote migration versions not found in local migrations directory", when `migration repair` is and isn't safe, and why Supabase commands must run from the project folder.
+- A record of how PR #3 reached production. The first `db push` was refused because production's migration history held an extra entry (`20261022153640_remote_schema`) from a `supabase db pull` run against production that morning. Since production's structure had been confirmed to match the baseline, that history entry was removed (`migration repair --status reverted`) and the lock-down migration was applied. Production now has RLS on all four tables, with `songs` read and add only and the other three closed.
+
 ## 2026-10-22: Database structure under version control (PR #3)
 
 ### Added
