@@ -51,6 +51,8 @@ Full runbook: [docs/database.md](docs/database.md).
 - Keep migrations compatible with the code that is already live (add first, remove later).
 - Never put the service_role key, database passwords or production data in the repo.
 - Test migrations before they reach staging where possible (for example, apply them to an empty Postgres and probe access as the `anon` role).
+- When giving Tom Supabase CLI steps: one command at a time, the expected result for each, and a `cat supabase/.temp/project-ref` check straight after every `supabase link`. Ask for the actual output before declaring a step done.
+- Never suggest `supabase migration repair` until the cause of a history mismatch is understood and `supabase db diff --linked` confirms the structure matches.
 
 ## Limits of cloud sessions
 
