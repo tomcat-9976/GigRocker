@@ -4,7 +4,18 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 **How entries are written:** every pull request adds its own entry, headed with the date and the pull request number. Merging to `main` is the release, so the entry's date is the day it merges; if a pull request waits longer than planned, update the date before merging.
 
-Database changes made by hand (before migrations are set up) are recorded here in full, including the exact SQL, so they can be reproduced and later folded into migration files.
+Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
+
+## 2026-10-22: Database structure under version control (PR #3)
+
+### Added
+- Supabase CLI setup (`supabase/config.toml`) and a **baseline migration**, `20261022222027_remote_schema.sql`, capturing the database exactly as it was: four tables (`songs`, `setlists`, `setlist_items`, `gig_history`), their relationships and access rules. It includes the hand-made `songs` access change below, so that change is now in version control too. Both databases are marked as already having the baseline; it was never run against them.
+- `docs/database.md`, a runbook for changing the database structure safely, including how to release migrations to production.
+- `docs/architecture.md`, describing how the app works, the data model and the security model. It replaces the earlier Gemini summary, which described practices that weren't in place yet.
+- `CLAUDE.md`, giving AI assistants the project's context and rules.
+
+### Security
+- Migration `20261022222400_lock_down_unused_tables.sql`: `setlists`, `setlist_items` and `gig_history` each had a policy that let anyone, including anonymous visitors, read, add, change and delete every row. The app doesn't use these tables yet, so the policies were removed and the tables are now closed to the app entirely. They were found while reviewing the baseline; the earlier review had only checked `songs`.
 
 ## 2026-10-22: Upgrade to Next.js 16 and React 19 (PR #2)
 
@@ -34,7 +45,7 @@ Database changes made by hand (before migrations are set up) are recorded here i
 
 ## 2026-10-22: Database access rules on `songs` tightened (manual change)
 
-**Applied by hand** in the Supabase SQL Editor, to staging first and then production. Not yet captured in a migration file.
+**Applied by hand** in the Supabase SQL Editor, to staging first and then production. Since captured in the baseline migration (PR #3).
 
 **Why:** Row Level Security was on, but the only policy (named "Enable all access for authenticated users on songs") applied to the `public` role, which includes anonymous visitors, and allowed every operation with no conditions. Anyone who loaded the site could read, add, edit or delete every song.
 

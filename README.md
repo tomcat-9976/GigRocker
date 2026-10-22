@@ -29,7 +29,7 @@ Vercel picks the right database automatically: the environment variables set for
 Every change follows the same path, no matter how small:
 
 1. Create a branch from `main` with a descriptive name, such as `feature/setlist-builder` or `fix/song-form-error`.
-2. Make the change on that branch. Code, any database change, and any documentation update go together.
+2. Make the change on that branch. Code, any database change, and any documentation update go together. Database changes have extra steps: see [docs/database.md](docs/database.md).
 3. Open a pull request. Vercel builds a preview of the branch, connected to the **staging** database.
 4. Test the preview. If it's right, merge the pull request.
 5. Merging to `main` deploys to production.
@@ -53,10 +53,13 @@ Use the **staging** project's values in `.env.local`, never production's. That w
 
 These are tracked and will be fixed through the normal process above:
 
-- **No login yet.** Anyone with the site address can see and add songs. Editing and deleting are blocked at the database level (see `CHANGELOG.md`, 2026-10-22).
-- **The database structure isn't in version control yet.** The `songs` table was created by hand in each Supabase project. Capturing it as migration files is planned.
+- **No login yet.** Anyone with the site address can see and add songs. Editing and deleting are blocked at the database level.
+- **Production database migrations are applied by hand** with the Supabase CLI after each merge. Automating this with GitHub Actions is planned.
 - **Tailwind CSS 3's build tools have known advisories.** They only run during the build, never in visitors' browsers, so the risk is low. Upgrading to Tailwind 4 fixes them and is planned.
 
 ## More documentation
 
-- [`CHANGELOG.md`](CHANGELOG.md): every notable change, including database changes made by hand.
+- [`docs/architecture.md`](docs/architecture.md): how the app is put together, the data model and the security model.
+- [`docs/database.md`](docs/database.md): how to change the database structure safely (runbook).
+- [`CHANGELOG.md`](CHANGELOG.md): every notable change.
+- [`CLAUDE.md`](CLAUDE.md): project context and rules for AI assistants.
