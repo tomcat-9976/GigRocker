@@ -38,12 +38,13 @@ Nothing goes into `main` directly.
 
 ## Running it on your own computer
 
-You need [Node.js](https://nodejs.org) (a current LTS version) installed.
+You need [Node.js](https://nodejs.org) **version 24** installed, the same version Vercel uses (it's set in `package.json`). Check with `node --version`. If npm prints an `EBADENGINE` warning, your Node version doesn't match.
 
 ```bash
-npm install                  # install dependencies (exact versions from package-lock.json)
+npm ci                       # install dependencies, exactly the versions in package-lock.json
 cp .env.example .env.local   # then fill in the two values in .env.local
 npm run dev                  # start the app at http://localhost:3000
+npm run lint                 # check the code for common mistakes
 ```
 
 Use the **staging** project's values in `.env.local`, never production's. That way local experiments can't touch real data. `.env.local` is ignored by Git, so your keys stay on your computer.
@@ -53,8 +54,8 @@ Use the **staging** project's values in `.env.local`, never production's. That w
 These are tracked and will be fixed through the normal process above:
 
 - **No login yet.** Anyone with the site address can see and add songs. Editing and deleting are blocked at the database level (see `CHANGELOG.md`, 2026-10-22).
-- **Next.js 14.1 has known security vulnerabilities.** An upgrade to the current version is the next planned change.
 - **The database structure isn't in version control yet.** The `songs` table was created by hand in each Supabase project. Capturing it as migration files is planned.
+- **Tailwind CSS 3's build tools have known advisories.** They only run during the build, never in visitors' browsers, so the risk is low. Upgrading to Tailwind 4 fixes them and is planned.
 
 ## More documentation
 
