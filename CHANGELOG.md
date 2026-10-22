@@ -2,11 +2,23 @@
 
 Notable changes to GigRocker, newest first. Each entry says what changed, why, and how it reached production.
 
+**How entries are written:** every pull request adds its own entry, headed with the date and the pull request number. Merging to `main` is the release, so the entry's date is the day it merges; if a pull request waits longer than planned, update the date before merging.
+
 Database changes made by hand (before migrations are set up) are recorded here in full, including the exact SQL, so they can be reproduced and later folded into migration files.
 
-## Unreleased
+## 2026-10-22: Upgrade to Next.js 16 and React 19 (PR #2)
 
-Changes merged into a branch but not yet in production.
+### Security
+- Upgraded Next.js from 14.1.0 to 16.4.2 and React from 18 to 19. Next.js 14.1.0 had many published security advisories, including one rated critical. The app's runtime dependencies now report 0 known vulnerabilities (`npm audit --omit=dev`).
+
+### Changed
+- Node.js 24 is now required, declared in `package.json` (`engines`). Next.js 16 needs Node 20.9 or newer, and declaring it means Vercel and local machines use the same version.
+- `npm run lint` now runs ESLint directly with Next.js's recommended rules (`eslint.config.mjs`), because Next.js 16 removed the `next lint` command. ESLint is held at version 9 to match Next.js's own starter template.
+
+### Known issues
+- `npm audit` (including development tools) still reports advisories in Tailwind CSS 3's build-time dependencies. These run only while the site is built, on the project's own files, never in visitors' browsers. Fixing them requires Tailwind 4, a breaking change planned as a separate pull request.
+
+## 2026-10-22: Repo foundation (PR #1)
 
 ### Fixed
 - Site styling now works. Tailwind was never running during the build because `postcss.config.js` and `tailwind.config.js` were missing, so the site rendered with plain browser defaults.
