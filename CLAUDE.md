@@ -47,7 +47,8 @@ npm run build     # must pass; dummy NEXT_PUBLIC_SUPABASE_* values are fine for 
 Full runbook: [docs/database.md](docs/database.md).
 
 - Structure changes only through new files in `supabase/migrations/` (`supabase migration new <name>`). Never edit a migration that has been applied.
-- Staging first (`supabase db push` while linked to staging); production only after merge, following the runbook.
+- Staging first (`supabase db push` while linked to staging). Production is applied automatically on merge by Supabase's GitHub integration ("Deploy to production"). Never `db push` to production while it's on; the manual steps in the runbook are an emergency fallback only.
+- After every merge, check the merge commit's check-runs through the REST API. Confirm "Supabase Preview" (the production deploy, despite its name) and both CI checks are green, and tell Tom. If the Supabase check fails, follow "If the Supabase check fails" in the runbook.
 - **The anon key is public, so RLS is the only access control.** Every table must have RLS enabled. Policies must name roles explicitly (`to anon`, `to authenticated`), never default to `PUBLIC`, and grant only the operations the app needs.
 - Keep migrations compatible with the code that is already live (add first, remove later).
 - Never put the service_role key, database passwords or production data in the repo.
