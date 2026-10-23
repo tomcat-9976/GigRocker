@@ -30,11 +30,13 @@ Every change follows the same path, no matter how small:
 
 1. Create a branch from `main` with a descriptive name, such as `feature/setlist-builder` or `fix/song-form-error`.
 2. Make the change on that branch. Code, any database change, and any documentation update go together. Database changes have extra steps: see [docs/database.md](docs/database.md).
-3. Open a pull request. Vercel builds a preview of the branch, connected to the **staging** database.
-4. Test the preview. If it's right, merge the pull request.
+3. Open a pull request. Two things happen automatically:
+   - GitHub runs the **checks** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)): lint, build, every migration applied to an empty database, and the database access tests.
+   - Vercel builds a **preview** of the branch, connected to the **staging** database.
+4. If a check fails, fix it on the branch; the checks run again on every push. Once every check is green, test the preview. If it's right, merge the pull request.
 5. Merging to `main` deploys to production.
 
-Nothing goes into `main` directly.
+Nothing goes into `main` directly. GitHub enforces this: `main` only accepts pull requests whose checks have passed, and can't be force-pushed or deleted.
 
 ## Running it on your own computer
 

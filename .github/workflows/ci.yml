@@ -1,0 +1,78 @@
+# Automatic checks (continuous integration) for GigRocker.
+#
+# Runs on every pull request into main, and on main itself after a merge.
+# A pull request is only merged when every check here is green; branch
+# protection on main enforces that.
+#
+# Nothing here touches the staging or production databases, and no secrets
+# are used: the database checks run against a throwaway database that exists
+# only for the length of the run.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# These checks only need to read the code.
+permissions:
+  contents: read
+
+# A newer push to the same pull request cancels the older, outdated run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Both jobs run on a pinned machine image (ubuntu-24.04) rather than
+# "ubuntu-latest", so the environment only changes when we choose to update it.
+
+jobs:
+  app:
+    name: Lint and build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Install Node (version from package.json "engines", same as Vercel)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - name: Install dependencies (exact versions from package-lock.json)
+        run: npm ci
+
+      - name: Check the code for common mistakes
+        run: npm run lint
+
+      - name: Build the site
+        run: npm run build
+        env:
+          # Placeholders: the build only needs these to exist. Real values
+          # live in Vercel's settings, never in the repo.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+          NEXT_TELEMETRY_DISABLED: 1
+
+  database:
+    name: Migrations and access rules
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Install the Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          # Same version as on Tom's Mac. Update deliberately, in its own
+          # pull request, when the local CLI is updated.
+          version: 2.121.0
+
+      - name: Apply every migration to an empty database
+        run: supabase db start
+
+      - name: Run the database tests in supabase/tests
+        run: supabase test db

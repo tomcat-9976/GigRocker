@@ -37,15 +37,16 @@ cat supabase/.temp/project-ref
    supabase migration new short_description
    ```
    This creates `supabase/migrations/<timestamp>_short_description.sql`. Write the SQL in it. Start the file with comments explaining what the change does and why.
-3. Confirm the CLI is linked to **staging** (see above), then apply the migration to staging:
+3. If the change affects who can do what (a new table, a new or changed access rule), update the tests in `supabase/tests/access_rules.test.sql` to match. See [Database tests](#database-tests).
+4. Commit, push, and open a pull request. Wait for the checks: they apply every migration to an empty database and run the tests. **Fix anything red before going further.** A migration that fails here never reaches staging.
+5. Confirm the CLI is linked to **staging** (see above), then apply the migration to staging:
    ```bash
    supabase db push
    ```
    It lists the migrations it is about to apply. Check that the list contains only your new file, then answer **Y**.
-4. Verify the change in the staging project's SQL Editor and in the app (`npm run dev` with staging values in `.env.local`).
-5. Commit, push, and open a pull request. The Vercel preview uses the staging database, which already has the change.
-6. After review and preview testing, merge the pull request.
-7. Release the migration to production straight away (next section).
+6. Verify the change in the staging project's SQL Editor and on the Vercel preview, which uses the staging database.
+7. After review and preview testing, merge the pull request.
+8. Release the migration to production straight away (next section).
 
 **Keep each migration compatible with the code that is already live.** Vercel deploys the merged code within a minute or two, and the migration reaches production a few minutes later, so for a short time old code runs against the new structure or new code against the old. Adding a table or a column is safe. Removing or renaming something the app uses is not; split it into steps across separate pull requests (add the new thing, move the code over, then remove the old thing).
 
@@ -68,6 +69,26 @@ Right after merging a pull request that contains migrations. **Run one command a
 Then verify the change on the production site and in the production SQL Editor (see [Useful queries](#useful-queries)).
 
 If any check fails, don't continue: go straight to step 8 to link back to staging, then investigate (see [Troubleshooting](#troubleshooting)).
+
+## Database tests
+
+`supabase/tests/access_rules.test.sql` holds automated tests, written with [pgTAP](https://pgtap.org), for what the public anon key (any website visitor) can and can't do. They check that:
+
+- RLS is on for every table, and no access rule applies to `PUBLIC` (every role). A failure names the offending table or rule.
+- A visitor can read and add songs, but not change or delete them.
+- A visitor can't see or add to `setlists`, `setlist_items` or `gig_history`.
+
+The checks on every pull request build a fresh database from the migrations and run these tests. To run them yourself (Docker Desktop must be running):
+
+```bash
+supabase db start      # a throwaway local database with every migration applied
+supabase test db       # run the tests; each prints "ok" or "not ok"
+supabase db stop       # shut it down
+```
+
+None of these commands touch staging or production, whichever project the CLI is linked to.
+
+When a migration changes who can do what, change the tests in the same pull request. A rule that becomes more open without a matching test change will fail the checks. That's intended: it makes widening access a deliberate decision.
 
 ## Checking that the databases match the migrations
 

@@ -109,10 +109,10 @@ erDiagram
 
 - **Code:** pushing a branch makes Vercel build a preview against staging. Merging to `main` makes Vercel build and deploy production. Node 24 is pinned in `package.json`, and `package-lock.json` pins every dependency version, so both environments build identically.
 - **Database:** migrations are applied with the Supabase CLI, to staging during development and to production right after merging. See [database.md](database.md).
+- **Checks:** every pull request runs GitHub Actions ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)). One job lints and builds the site. The other applies every migration to a throwaway database and runs the access tests in `supabase/tests`. No secrets are involved and neither database is touched. `main` is protected: it only accepts pull requests whose checks pass.
 
 ## Not built yet
 
 - Login and per-user data (requires an owner column on each table and new RLS policies)
 - Automatic production migrations when a pull request merges (GitHub Actions)
-- Automatic checks (lint and build) on every pull request, and branch protection on `main`
 - A decision on what data staging should hold once other people use the app (a scrubbed copy of production, or made-up sample data)
