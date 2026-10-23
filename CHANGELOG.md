@@ -6,6 +6,14 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-23: Requirements for accounts and sharing (PR #7)
+
+Documentation only.
+
+### Added
+- `docs/requirements/accounts-and-sharing.md`: the agreed vision, eight decisions, five phases (private login, setlist builder, simple sharing, collaborators, open network), and the data model direction for login and sharing setlists with other musicians.
+- Links to it from `README.md`, `docs/architecture.md` and `CLAUDE.md`. `CLAUDE.md` now asks AI sessions to follow `docs/requirements/` when planning features.
+
 ## 2026-10-23: Production migrations deploy automatically on merge (PR #6)
 
 Documentation only; no code, migration or setting changes.

@@ -113,5 +113,5 @@ erDiagram
 
 ## Not built yet
 
-- Login and per-user data (requires an owner column on each table and new RLS policies)
+- Login, per-user data and sharing setlists with other musicians, in five phases. See [requirements/accounts-and-sharing.md](requirements/accounts-and-sharing.md).
 - A decision on what data staging should hold once other people use the app (a scrubbed copy of production, or made-up sample data)
