@@ -6,6 +6,18 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-23: Production migrations deploy automatically on merge (PR #6)
+
+Documentation only; no code, migration or setting changes.
+
+### Changed
+- Production database releases are documented as automatic. Supabase's GitHub integration is connected to the production project with "Deploy to production" on and `main` as the production branch, so merging a pull request applies its migrations to production. This was already switched on before 2026-10-22. It came to light when the "Supabase Preview" check was found running on merges to `main`, and Tom confirmed the settings in the dashboard.
+- `docs/database.md`: "Releasing to production" now means merging, then confirming the Supabase Preview check on the merge commit. It covers what to do when that check fails, and the manual steps become an emergency fallback. The integration's expected settings are recorded.
+- `README.md`, `docs/architecture.md`, `CLAUDE.md`: no longer say production migrations are applied by hand. `CLAUDE.md` adds checking the production deploy after every merge.
+
+### Fixed (record)
+- On 2026-10-22, the automatic release of PR #3 failed within a minute of the merge. Production's history held the stray `20261022153640` entry, and the integration refuses to apply migrations when a version in the history has no matching file. The lock-down migration was then applied by hand after the repair, as recorded under PR #4. The manual push and the automatic release didn't overlap, because the automatic one had already stopped.
+
 ## 2026-10-23: Automatic checks on every pull request (PR #5)
 
 ### Added

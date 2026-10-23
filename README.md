@@ -34,7 +34,7 @@ Every change follows the same path, no matter how small:
    - GitHub runs the **checks** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)): lint, build, every migration applied to an empty database, and the database access tests.
    - Vercel builds a **preview** of the branch, connected to the **staging** database.
 4. If a check fails, fix it on the branch; the checks run again on every push. Once every check is green, test the preview. If it's right, merge the pull request.
-5. Merging to `main` deploys to production.
+5. Merging to `main` deploys to production: Vercel deploys the site, and Supabase applies any new database migrations.
 
 Nothing goes into `main` directly. GitHub enforces this: `main` only accepts pull requests whose checks have passed, and can't be force-pushed or deleted.
 
@@ -56,7 +56,7 @@ Use the **staging** project's values in `.env.local`, never production's. That w
 These are tracked and will be fixed through the normal process above:
 
 - **No login yet.** Anyone with the site address can see and add songs. Editing and deleting are blocked at the database level.
-- **Production database migrations are applied by hand** with the Supabase CLI after each merge. Automating this with GitHub Actions is planned.
+- **Staging database migrations are applied by hand** with the Supabase CLI, before review. Production is automatic.
 - **Tailwind CSS 3's build tools have known advisories.** They only run during the build, never in visitors' browsers, so the risk is low. Upgrading to Tailwind 4 fixes them and is planned.
 
 ## More documentation

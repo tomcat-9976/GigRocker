@@ -6,8 +6,8 @@ How the structure of GigRocker's database (tables, columns, access rules) is cha
 
 1. **Migrations are the only source of truth.** The database structure is defined by the files in `supabase/migrations/`, applied in filename order. Don't change structure in the Supabase dashboard (Table Editor, policy editor) or by running SQL by hand.
 2. **Never edit a migration that has been applied anywhere.** To change or undo something, write a new migration.
-3. **Staging first.** A migration is applied to staging, tested there, reviewed in a pull request, and only applied to production after the pull request is merged.
-4. **The CLI stays linked to staging.** The Supabase CLI remembers one "linked" project at a time. Keep it on staging, and switch to production only for the few commands in [Releasing to production](#releasing-to-production).
+3. **Staging first, production on merge.** A migration is applied to staging, tested there and reviewed in a pull request. Merging the pull request into `main` applies it to production automatically. See [Releasing to production](#releasing-to-production).
+4. **Nobody pushes to production by hand.** The Supabase CLI remembers one "linked" project at a time. Keep it on staging. Linking it to production is only for the [emergency fallback](#emergency-fallback-releasing-by-hand), after the cause of a failed automatic release is understood.
 
 Data (the songs, setlists and so on that people enter) is not part of migrations. Migrations change structure, never the content people have added.
 
@@ -22,7 +22,7 @@ cat supabase/.temp/project-ref
 | Output | Meaning |
 | --- | --- |
 | `mwavgdpfulntroqeuopg` | **Staging.** Safe to experiment. |
-| `xuovllfdugsfvdqqjvho` | **Production.** Only during a release. |
+| `xuovllfdugsfvdqqjvho` | **Production.** Only during the emergency fallback. Link back to staging straight after. |
 
 ## Making a change
 
@@ -46,13 +46,48 @@ cat supabase/.temp/project-ref
    It lists the migrations it is about to apply. Check that the list contains only your new file, then answer **Y**.
 6. Verify the change in the staging project's SQL Editor and on the Vercel preview, which uses the staging database.
 7. After review and preview testing, merge the pull request.
-8. Release the migration to production straight away (next section).
+8. Watch the automatic release to production, then verify it (next section).
 
-**Keep each migration compatible with the code that is already live.** Vercel deploys the merged code within a minute or two, and the migration reaches production a few minutes later, so for a short time old code runs against the new structure or new code against the old. Adding a table or a column is safe. Removing or renaming something the app uses is not; split it into steps across separate pull requests (add the new thing, move the code over, then remove the old thing).
+**Keep each migration compatible with the code that is already live.** On merge, Vercel deploys the new code and Supabase applies the new migration at about the same time, in no guaranteed order. For a minute or two, old code may run against the new structure or new code against the old. Adding a table or a column is safe. Removing or renaming something the app uses is not; split it into steps across separate pull requests (add the new thing, move the code over, then remove the old thing).
 
 ## Releasing to production
 
-Right after merging a pull request that contains migrations. **Run one command at a time and check its result before typing the next.** Don't paste the whole list at once: when `db push` asks its Yes/No question, the next pasted line can be taken as the answer.
+Production migrations are applied automatically. Supabase's GitHub integration is connected to the production project with **Deploy to production** switched on. When a pull request merges into `main`, it applies any new migrations to production, usually within a minute. Supabase's documentation describes it in [GitHub integration](https://supabase.com/docs/guides/deployment/branching/github-integration).
+
+The integration's settings live in the Supabase dashboard, not in this repo: production project → **Project Settings → Integrations → GitHub Integration**. They should read:
+
+| Setting | Value |
+| --- | --- |
+| GitHub repository | `tomcat-9976/GigRocker` |
+| Working directory | `.` |
+| Deploy to production | On |
+| Production branch name | `main` |
+| Automatic branching | Off (needs the Pro plan; staging is a separate project instead) |
+
+Also on merge, per Supabase's documentation: Edge Functions and storage buckets declared in `supabase/config.toml` are deployed (there are none today). Auth, API and seed settings in `config.toml` are ignored, so its local-only defaults never reach production.
+
+After merging a pull request:
+
+1. On GitHub, open the merge commit on `main` (the repo's **Commits** page, or the commit link at the bottom of the merged pull request).
+2. Wait for its checks. The one named **Supabase Preview** is the production deploy: despite the name, on `main` it applies migrations to production. It should show a green tick, alongside the two CI checks.
+3. If the pull request contained a migration, verify it in the production SQL Editor (see [Useful queries](#useful-queries)) and on the live site.
+
+On pull request branches the Supabase Preview check always shows **skipped**. That's expected: it would create preview databases, which this plan doesn't include.
+
+**Never run `supabase db push` against production while the integration is on.** Two tools applying the same migration at the same moment can collide and fail partway.
+
+### If the Supabase check fails
+
+A migration that fails is rolled back, so production is left as it was before that migration.
+
+1. Click **Details** next to the failed check to open the deployment log in the Supabase dashboard, and read the error.
+2. Look the error up in [Troubleshooting](#troubleshooting). A history mismatch ("Remote migration versions not found") is the most likely cause, and it's what happened on 2026-10-22.
+3. Fix forward where possible: a new pull request with a corrected migration. Merging it runs the automatic release again.
+4. Only if the integration can't do it, and the cause is understood, use the emergency fallback below.
+
+### Emergency fallback: releasing by hand
+
+Use this only after a failed automatic release whose cause you understand. **Run one command at a time and check its result before typing the next.** Don't paste the whole list at once: when `db push` asks its Yes/No question, the next pasted line can be taken as the answer.
 
 | # | Command | Check before continuing |
 | --- | --- | --- |
@@ -123,7 +158,7 @@ select version, name, statements from supabase_migrations.schema_migrations orde
 
 ### "Remote migration versions not found in local migrations directory"
 
-The database's list of applied migrations contains a version that has no matching file in `supabase/migrations/`. The CLI refuses to push until the two agree. Nothing has been changed.
+The database's list of applied migrations contains a version that has no matching file in `supabase/migrations/`. The CLI, and the automatic release on merge, refuse to apply anything until the two agree. Nothing has been changed. On production you'll see it as a failed Supabase Preview check on `main`, with this error in the deployment log.
 
 1. Link back to staging if you were on production.
 2. Make sure you're on an up-to-date `main` (`git checkout main`, `git pull`). Often the file exists on GitHub and you just don't have it yet.
@@ -145,4 +180,4 @@ The CLI uses the `supabase/` folder **in the folder you run it from**. Run Supab
 | Migration | What it does |
 | --- | --- |
 | `20261022222027_remote_schema.sql` | **Baseline.** Captures the database exactly as it was on 2026-10-22, before migrations were used: four tables (`songs`, `setlists`, `setlist_items`, `gig_history`) and their access rules. Generated from staging with `supabase db pull`. It was never run against either database; both were marked as already having it (`db pull` on staging, `supabase migration repair --status applied` on production). Production's history also held an older entry, `20261022153640_remote_schema`, from a `supabase db pull` run against production earlier that morning whose file never reached the repo. It was removed with `migration repair --status reverted` on 2026-10-22, after `db diff` confirmed production matched the baseline. |
-| `20261022222400_lock_down_unused_tables.sql` | Removes the open access rules on `setlists`, `setlist_items` and `gig_history`, which let anonymous visitors read, change and delete them. The app doesn't use these tables yet. |
+| `20261022222400_lock_down_unused_tables.sql` | Removes the open access rules on `setlists`, `setlist_items` and `gig_history`, which let anonymous visitors read, change and delete them. The app doesn't use these tables yet. On production, the automatic release at merge failed on the stray history entry above, so this migration was applied by hand after the repair. |
