@@ -64,3 +64,5 @@ Claude sessions running in the cloud can push to GitHub and use the GitHub REST 
 ## Current state
 
 See "Known gaps" in [README.md](README.md) and "Not built yet" in [docs/architecture.md](docs/architecture.md).
+
+Agreed feature requirements live in `docs/requirements/`. Read the relevant one before planning a feature, and follow its decisions. If work needs a decision to change, raise it with Tom and update the document in the same pull request. Current: [accounts and sharing](docs/requirements/accounts-and-sharing.md); phase 1, private login, is next.
