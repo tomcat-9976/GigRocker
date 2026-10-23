@@ -6,6 +6,21 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-23: Songs and setlists record their owner (PR #8)
+
+Accounts and sharing, phase 1, step A. Nothing changes for users of the app.
+
+### Added
+- Migration `20261023203700_add_owner_to_songs_and_setlists.sql`: `owner_id` on `songs` and `setlists`. It links to the user in Supabase Auth, is filled in automatically with whoever is signed in, and is indexed. A user who still owns records can't be deleted. It's optional for now, and no access rules change.
+- Database tests: 18, up from 12. They now also check that both tables have an owner column, that a new setlist or song is owned by whoever adds it, and that a song added while signed out has no owner.
+
+### Release steps (by hand, per environment, staging first)
+Data and settings changes, which don't belong in migrations:
+- Create Tom's account in Supabase Auth.
+- Switch sign-ups off (requirements decision D7).
+- After the migration reaches that database, assign existing songs and setlists to Tom.
+- Production only: remove test songs (decision D8).
+
 ## 2026-10-23: Requirements for accounts and sharing (PR #7)
 
 Documentation only.

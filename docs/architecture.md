@@ -47,12 +47,19 @@ Both environments run the same code and the same migrations, but never share dat
 
 ```mermaid
 erDiagram
+    users ||--o{ songs : "owns"
+    users ||--o{ setlists : "owns"
     songs ||--o{ setlist_items : "appears in"
     setlists ||--o{ setlist_items : "contains"
     setlists ||--o{ gig_history : "was played at"
 
+    users {
+        uuid id PK "Supabase Auth (auth.users)"
+        text email
+    }
     songs {
         uuid id PK
+        uuid owner_id FK "defaults to the signed-in user"
         text title
         text artist
         text original_key
@@ -63,6 +70,7 @@ erDiagram
     }
     setlists {
         uuid id PK
+        uuid owner_id FK "defaults to the signed-in user"
         text name
         text venue
         date gig_date
@@ -92,7 +100,8 @@ erDiagram
 - Deleting a setlist also deletes its items and its gig history entries (`on delete cascade`).
 - Deleting a song keeps any setlist items that used it, with the song link cleared (`on delete set null`).
 - Only `songs` is used by the app today. The other three tables were created ahead of the setlist builder, and no part of the app uses them yet.
-- No table records which user owns a row yet. That column has to be added before login and per-user access rules can work.
+- Songs and setlists record their owner in `owner_id`, a link to the user in Supabase Auth. It's filled in automatically with whoever is signed in when the row is added. Setlist items and gig history belong to their setlist. A user who still owns songs or setlists can't be deleted (`on delete restrict`).
+- Ownership isn't enforced yet. `owner_id` is optional, and the access rules below don't use it. Login (phase 1, step B of [the requirements](requirements/accounts-and-sharing.md)) makes it required and switches the rules to owner-only.
 
 ## Security model
 
