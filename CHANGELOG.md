@@ -6,6 +6,19 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-23: Automatic checks on every pull request (PR #5)
+
+### Added
+- GitHub Actions workflow `.github/workflows/ci.yml`, run on every pull request into `main` and on `main` after a merge. It has two checks:
+  - **Lint and build** runs `npm ci`, `npm run lint` and `npm run build` on the Node version in `package.json`.
+  - **Migrations and access rules** applies every migration to a throwaway database with the Supabase CLI (2.121.0), then runs the database tests.
+- `supabase/tests/access_rules.test.sql`: 12 pgTAP tests. They check that RLS is on for every table, that no rule applies to `PUBLIC`, and exactly what an anonymous visitor can do with each table.
+- Branch protection on `main`: changes arrive only through pull requests whose checks pass. Force-pushes and deletion are blocked.
+
+### Changed
+- `docs/database.md`: migrations now pass the checks before they're applied to staging. A new "Database tests" section explains the tests and how to run them locally.
+- `README.md`, `docs/architecture.md`, `CLAUDE.md`: describe the checks and the protected `main`.
+
 ## 2026-10-22: Runbook lessons from the first production release (PR #4)
 
 Documentation only; no code or database changes.
