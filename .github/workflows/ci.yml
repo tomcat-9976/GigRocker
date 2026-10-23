@@ -25,10 +25,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# Both jobs run on a pinned machine image (ubuntu-24.04) rather than
+# "ubuntu-latest", so the environment only changes when we choose to update it.
+
 jobs:
   app:
     name: Lint and build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
         uses: actions/checkout@v7
@@ -56,7 +59,7 @@ jobs:
 
   database:
     name: Migrations and access rules
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
         uses: actions/checkout@v7
