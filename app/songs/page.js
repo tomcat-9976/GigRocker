@@ -82,6 +82,9 @@ export default function SongsPage() {
 
         {/* Library List */}
         <h2 className="text-2xl font-semibold mb-4">Your Repertoire</h2>
+        {songs.length === 0 && (
+          <p className="text-slate-500">No songs yet. Add your first one above.</p>
+        )}
         <div className="space-y-4">
           {songs.map(song => (
             <div key={song.id} className="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-center">
