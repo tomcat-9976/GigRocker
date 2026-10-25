@@ -1,4 +1,5 @@
 import './globals.css'
+import AuthGate from './components/AuthGate'
 
 export const metadata = {
   title: 'GigRocker',
@@ -9,7 +10,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-slate-950 text-slate-100 min-h-screen">
-        {children}
+        {/* Every page requires sign-in. */}
+        <AuthGate>{children}</AuthGate>
       </body>
     </html>
   )
