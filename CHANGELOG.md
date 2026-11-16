@@ -11,7 +11,7 @@ Database structure changes live in `supabase/migrations/` (see [docs/database.md
 Documentation only. Nothing changes in the app.
 
 ### Added
-- `docs/requirements/printing.md`: how songs and setlist booklets will print for a three-ring binder. It covers US Letter printed on both sides, chords above the words (songs without chords print as plain lyrics), nothing smaller than 14 point, two columns before smaller text, and two-page songs starting on a left-hand page. It also sets the build order, starting with a printing spike, and the questions the spike must answer.
+- `docs/requirements/printing.md`: how songs and setlist booklets will print for a three-ring binder. It covers US Letter printed on both sides, chords written once per section for now (printed as a line of chords; songs without chords print as plain lyrics), nothing smaller than 14 point, two columns before smaller text, and two-page songs starting on a left-hand page. It also sets the build order, starting with a printing spike, and the questions the spike must answer.
 
 ### Changed
 - The accounts and sharing requirements, `CLAUDE.md`, the README and `docs/architecture.md` link to it and give the new order: printing groundwork before the setlist builder.
