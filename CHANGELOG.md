@@ -6,6 +6,23 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-11-16: Song page (PR #10)
+
+Songs could be added but never opened again. Now they can.
+
+### Added
+- **A page for each song** at `/songs/<id>`: title, artist, key, and the lyrics with chords (written like `[G]`) highlighted. Line breaks are kept as typed.
+- **Edit** a song's title, artist, key, and lyrics and chords. Blank titles, keys and lyrics are refused.
+- **Delete** a song, after an "are you sure?" step on the page.
+- A song that doesn't exist, or belongs to someone else, shows "Song not found".
+
+### Changed
+- Each song in the library links to its page, and the library is sorted by title. Songs without an artist no longer show a stray "by".
+- README, `docs/architecture.md` and the requirements status.
+
+### Release steps
+- None. No database changes: the owner-only rules from PR #9 already let owners change and delete their own songs.
+
 ## 2026-11-16: Private login (PR #9)
 
 Accounts and sharing, phase 1, step B. Phase 1 is now complete.

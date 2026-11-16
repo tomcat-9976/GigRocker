@@ -42,7 +42,8 @@ Both environments run the same code and the same migrations, but never share dat
 | `app/components/AuthGate.js` | Shows the sign-in form until someone is signed in, then the page, with a header showing who is signed in and a Sign out button |
 | `app/components/SignInForm.js` | Email and password sign-in. There is no sign-up form |
 | `app/page.js` | Home page, linking to the song library |
-| `app/songs/page.js` | Song library: add a song, list songs. Also contains a chord-transposing helper that isn't wired up yet |
+| `app/songs/page.js` | Song library: add a song, list songs sorted by title, each linking to its page. Also contains a chord-transposing helper that isn't wired up yet |
+| `app/songs/[id]/page.js` | One song (the folder name `[id]` means the song's id is part of the address, `/songs/<id>`): lyrics with chords highlighted, Edit, and Delete with a confirmation step. Shows "Song not found" for a song that doesn't exist or isn't yours |
 | `lib/supabase.js` | Creates the Supabase client from the two environment variables. It also keeps the signed-in session |
 | `supabase/config.toml` | Supabase CLI settings (used for local tooling, not by the live site) |
 | `supabase/migrations/` | The database structure, as numbered SQL files. See [database.md](database.md) |
@@ -134,5 +135,5 @@ erDiagram
 ## Not built yet
 
 - Phases 2 to 5 of accounts and sharing: the setlist builder, simple sharing, collaborators and the open network. Phase 1, private login, is done. See [requirements/accounts-and-sharing.md](requirements/accounts-and-sharing.md).
-- Password reset by email (for now, reset in the Supabase dashboard), and editing or deleting songs in the app.
+- Password reset by email (for now, reset in the Supabase dashboard).
 - A decision on what data staging should hold once other people use the app (a scrubbed copy of production, or made-up sample data)
