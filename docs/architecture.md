@@ -135,5 +135,6 @@ erDiagram
 ## Not built yet
 
 - Phases 2 to 5 of accounts and sharing: the setlist builder, simple sharing, collaborators and the open network. Phase 1, private login, is done. See [requirements/accounts-and-sharing.md](requirements/accounts-and-sharing.md).
+- Printing: a print layout for one song, then setlist booklets. See [requirements/printing.md](requirements/printing.md).
 - Password reset by email (for now, reset in the Supabase dashboard).
 - A decision on what data staging should hold once other people use the app (a scrubbed copy of production, or made-up sample data)

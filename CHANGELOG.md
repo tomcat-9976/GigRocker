@@ -6,6 +6,16 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-11-16: Printing requirements (PR #11)
+
+Documentation only. Nothing changes in the app.
+
+### Added
+- `docs/requirements/printing.md`: how songs and setlist booklets will print for a three-ring binder. It covers US Letter printed on both sides, chords written once per section for now (printed as a line of chords; songs without chords print as plain lyrics), nothing smaller than 14 point, two columns before smaller text, and two-page songs starting on a left-hand page. It also sets the build order, starting with a printing spike, and the questions the spike must answer.
+
+### Changed
+- The accounts and sharing requirements, `CLAUDE.md`, the README and `docs/architecture.md` link to it and give the new order: printing groundwork before the setlist builder.
+
 ## 2026-11-16: Song page (PR #10)
 
 Songs could be added but never opened again. Now they can.

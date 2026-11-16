@@ -1,6 +1,6 @@
 # Accounts and sharing: requirements
 
-**Status:** agreed with Tom on 2026-10-23. Phase 1 (private login) was delivered in PRs #8 and #9. Phase 2, the setlist builder, is next.
+**Status:** agreed with Tom on 2026-10-23. Phase 1 (private login) was delivered in PRs #8 and #9. Next comes the printing groundwork in [printing](printing.md), then phase 2, the setlist builder.
 
 This document records what login and sharing should do, the decisions behind them, and the order they'll be built in. Each phase gets its own detailed plan and pull requests. When a decision here changes, change this document in the same pull request.
 
@@ -31,7 +31,7 @@ Build as simply as possible, but never in a way that blocks the later phases.
 | --- | --- | --- |
 | 1. Private login | Sign in and out. Every song and setlist has an owner. Owners see and change only their own records, and signed-out visitors see nothing. | — |
 | 2. Setlist builder | Create a setlist for a gig (name, venue, date) from your songs. Order the songs and set a per-gig key and notes. | 1 |
-| 3. Simple sharing | A printable booklet of a setlist with its songs, and a private read-only link to one setlist that can be revoked. | 2 |
+| 3. Simple sharing | A printable booklet of a setlist with its songs (layout rules in [printing](printing.md)), and a private read-only link to one setlist that can be revoked. | 2 |
 | 4. Collaborators | Invite a musician to one setlist as a **viewer** or **editor** (D4). They sign in and see only that setlist and its songs. The owner can remove them. | 3, plus an email service |
 | 5. Open network | Musicians create their own accounts with private libraries and share with each other in the same way. | 4 |
 
