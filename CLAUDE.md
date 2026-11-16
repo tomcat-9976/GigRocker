@@ -20,7 +20,8 @@ The owner, Tom, is IT-savvy but not a professional developer, and uses this proj
 
 ```bash
 npm ci            # install exactly what package-lock.json specifies
-npm run dev       # local server; needs .env.local (see .env.example), staging values only
+supabase start    # local Supabase in Docker (database + sign-in); see README "Running it on your own computer"
+npm run dev       # local server; needs .env.local (see .env.example): local Supabase values, or staging, never production
 npm run lint      # must pass before opening a pull request
 npm run build     # must pass; dummy NEXT_PUBLIC_SUPABASE_* values are fine for a build check
 ```
@@ -65,4 +66,6 @@ Claude sessions running in the cloud can push to GitHub and use the GitHub REST 
 
 See "Known gaps" in [README.md](README.md) and "Not built yet" in [docs/architecture.md](docs/architecture.md).
 
-Agreed feature requirements live in `docs/requirements/`. Read the relevant one before planning a feature, and follow its decisions. If work needs a decision to change, raise it with Tom and update the document in the same pull request. Current: [accounts and sharing](docs/requirements/accounts-and-sharing.md); phase 1, private login, is next.
+Agreed feature requirements live in `docs/requirements/`. Read the relevant one before planning a feature, and follow its decisions. If work needs a decision to change, raise it with Tom and update the document in the same pull request. Current: [accounts and sharing](docs/requirements/accounts-and-sharing.md). Phase 1, private login, is done; phase 2, the setlist builder, is next.
+
+Sign-in: email and password via Supabase Auth, with the session kept in the browser (supabase-js). `AuthGate` in `app/layout.js` guards every page. Data protection comes from RLS, never from the page. New tables need owner-based rules and tests from the start.

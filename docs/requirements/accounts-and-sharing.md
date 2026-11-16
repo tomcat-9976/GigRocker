@@ -1,6 +1,6 @@
 # Accounts and sharing: requirements
 
-**Status:** agreed with Tom on 2026-10-23. Phase 1 is next.
+**Status:** agreed with Tom on 2026-10-23. Phase 1 (private login) was delivered in PRs #8 and #9. Phase 2, the setlist builder, is next.
 
 This document records what login and sharing should do, the decisions behind them, and the order they'll be built in. Each phase gets its own detailed plan and pull requests. When a decision here changes, change this document in the same pull request.
 

@@ -6,6 +6,23 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-10-25: Private login (PR #9)
+
+Accounts and sharing, phase 1, step B. Phase 1 is now complete.
+
+### Added
+- **Sign-in with email and password.** Every page shows a sign-in form until you're signed in, then a header with your email and a Sign out button. There's no sign-up: accounts are created by the owner in the Supabase dashboard.
+- Local development against a local Supabase (`supabase start`), documented in the README, with an updated `.env.example`.
+- An empty-library message on the songs page.
+
+### Changed
+- **Owner-only access** (migration `20261025212300_owner_only_access.sql`). Every song and setlist must have an owner. Signed-in users can read, add, change and delete only their own songs and setlists, and the items and history of their own setlists. A setlist item may only use the same user's songs. Signed-out visitors can do nothing: the old "anyone can read and add songs" rules are gone.
+- Database tests: 35, up from 18. A signed-out visitor gets nothing, and one user can't see or change another user's records.
+- `docs/architecture.md` (overview, security model, code layout), `docs/database.md`, the requirements status and `CLAUDE.md`.
+
+### Release steps (by hand)
+- Before each environment gets the migration, confirm no song or setlist lacks an owner. Otherwise the migration fails and changes nothing.
+
 ## 2026-10-23: Songs and setlists record their owner (PR #8)
 
 Accounts and sharing, phase 1, step A. Nothing changes for users of the app.

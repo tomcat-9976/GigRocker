@@ -109,11 +109,11 @@ If any check fails, don't continue: go straight to step 8 to link back to stagin
 
 `supabase/tests/access_rules.test.sql` holds automated tests, written with [pgTAP](https://pgtap.org), for who can do what with each table: a signed-out visitor using the public anon key, and a signed-in user. They check that:
 
-- RLS is on for every table, and no access rule applies to `PUBLIC` (every role). A failure names the offending table or rule.
-- Songs and setlists have an owner, filled in with whoever adds them.
-- A visitor can read and add songs, but not change or delete them.
-- A visitor can't see or add to `setlists`, `setlist_items` or `gig_history`.
-- A signed-in user can add a song, and owns it.
+- RLS is on for every table; no access rule applies to `PUBLIC` (every role) or to signed-out visitors (`anon`). A failure names the offending table or rule.
+- Every song and setlist must have an owner.
+- A signed-out visitor can't see or add anything.
+- Signed-in user A sees only their own songs, setlists, items and history. A can add, change and delete their own records, but can't add records in B's name, give a song away, or touch B's songs. A setlist item may only use A's own songs.
+- Signed-in user B can't see or change any of A's records.
 
 The checks on every pull request build a fresh database from the migrations and run these tests. To run them yourself (Docker Desktop must be running):
 
@@ -184,3 +184,4 @@ The CLI uses the `supabase/` folder **in the folder you run it from**. Run Supab
 | `20261022222027_remote_schema.sql` | **Baseline.** Captures the database exactly as it was on 2026-10-22, before migrations were used: four tables (`songs`, `setlists`, `setlist_items`, `gig_history`) and their access rules. Generated from staging with `supabase db pull`. It was never run against either database; both were marked as already having it (`db pull` on staging, `supabase migration repair --status applied` on production). Production's history also held an older entry, `20261022153640_remote_schema`, from a `supabase db pull` run against production earlier that morning whose file never reached the repo. It was removed with `migration repair --status reverted` on 2026-10-22, after `db diff` confirmed production matched the baseline. |
 | `20261022222400_lock_down_unused_tables.sql` | Removes the open access rules on `setlists`, `setlist_items` and `gig_history`, which let anonymous visitors read, change and delete them. The app doesn't use these tables yet. On production, the automatic release at merge failed on the stray history entry above, so this migration was applied by hand after the repair. |
 | `20261023203700_add_owner_to_songs_and_setlists.sql` | Adds `owner_id` to `songs` and `setlists`: a link to the owning user, filled in automatically with whoever is signed in. It's optional for now and no access rules change. Existing rows were assigned to Tom by hand in each environment afterwards (a data change; see `CHANGELOG.md`). Accounts and sharing, phase 1, step A. |
+| `20261025212300_owner_only_access.sql` | Makes `owner_id` required, and replaces the open song rules with owner-only rules for signed-in users on `songs` and `setlists`. Setlist items and gig history are reached through their setlist, and items may only use the same user's songs. Signed-out visitors get nothing. It fails, changing nothing, if any row still lacks an owner. Accounts and sharing, phase 1, step B. |
