@@ -45,7 +45,7 @@ Done when:
 - The database tests prove that a second signed-in user can't see, change or delete Tom's songs or setlists.
 - Sign-ups are switched off in both Supabase projects, and Tom has an account in each.
 
-Not in phase 1: password reset emails (for now, reset from the Supabase dashboard), profiles or display names, and editing or deleting songs in the app. The database will allow owners to change and delete their own songs, ready for when the screens exist.
+Not in phase 1: password reset emails (for now, reset from the Supabase dashboard), profiles or display names, and editing or deleting songs in the app. The database will allow owners to change and delete their own songs, ready for when the screens exist. (Those screens were added separately, in PR #10.)
 
 ## Data model direction
 

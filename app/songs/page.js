@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
 
 // Simple chord transposition helper
@@ -28,7 +29,7 @@ export default function SongsPage() {
   }, []);
 
   async function fetchSongs() {
-    const { data, error } = await supabase.from('songs').select('*');
+    const { data, error } = await supabase.from('songs').select('*').order('title');
     if (error) console.error('Error fetching songs:', error);
     else setSongs(data || []);
   }
@@ -87,12 +88,13 @@ export default function SongsPage() {
         )}
         <div className="space-y-4">
           {songs.map(song => (
-            <div key={song.id} className="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-center">
+            <Link key={song.id} href={`/songs/${song.id}`} className="bg-slate-900 border border-slate-800 p-4 rounded-lg flex justify-between items-center hover:border-cyan-700 hover:bg-slate-800 transition">
               <div>
-                <h3 className="text-lg font-bold text-cyan-300">{song.title} <span className="text-sm font-normal text-slate-400">by {song.artist}</span></h3>
+                <h3 className="text-lg font-bold text-cyan-300">{song.title}{song.artist && <span className="text-sm font-normal text-slate-400"> by {song.artist}</span>}</h3>
                 <p className="text-sm text-slate-400">Key: {song.original_key}</p>
               </div>
-            </div>
+              <span aria-hidden="true" className="text-slate-500">→</span>
+            </Link>
           ))}
         </div>
       </div>

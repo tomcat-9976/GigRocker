@@ -2,7 +2,7 @@
 
 A web app for working musicians: a stage-ready song library with chords, a transposer, and (planned) a setlist builder and printable binder booklets. Built for a solo performer first, with collaboration with other musicians as a later goal.
 
-**Status:** early prototype. You sign in with an account created by the owner; there's no public sign-up. The song library can add and list your own songs. Transposing, setlists and booklets aren't built yet.
+**Status:** early prototype. You sign in with an account created by the owner; there's no public sign-up. The song library can add, list, open, edit and delete your own songs; a song's page shows its lyrics with the chords highlighted. Transposing, setlists and booklets aren't built yet.
 
 ## How it's built
 
@@ -81,7 +81,6 @@ You can also point `.env.local` at the **staging** project (its URL and anon key
 These are tracked and will be fixed through the normal process above:
 
 - **No password reset by email.** For now, passwords are reset in the Supabase dashboard (Authentication → Users).
-- **Songs can't be edited or deleted in the app yet.** The database already allows owners to do both, ready for when the screens exist.
 - **Staging database migrations are applied by hand** with the Supabase CLI, before review. Production is automatic.
 - **Tailwind CSS 3's build tools have known advisories.** They only run during the build, never in visitors' browsers, so the risk is low. Upgrading to Tailwind 4 fixes them and is planned.
 
