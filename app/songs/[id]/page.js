@@ -188,6 +188,9 @@ export default function SongPage() {
           </div>
           {!confirmingDelete && (
             <div className="flex gap-3">
+              <Link href={`/songs/${id}/print`} className={`${buttonClass} border border-slate-700 hover:bg-slate-800`}>
+                Print
+              </Link>
               <button type="button" onClick={startEditing} className={`${buttonClass} bg-cyan-500 hover:bg-cyan-600 text-slate-950`}>
                 Edit
               </button>
