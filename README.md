@@ -89,5 +89,6 @@ These are tracked and will be fixed through the normal process above:
 - [`docs/architecture.md`](docs/architecture.md): how the app is put together, the data model and the security model.
 - [`docs/database.md`](docs/database.md): how to change the database structure safely (runbook).
 - [`docs/requirements/accounts-and-sharing.md`](docs/requirements/accounts-and-sharing.md): agreed requirements and phases for login and sharing setlists with other musicians.
+- [`docs/requirements/printing.md`](docs/requirements/printing.md): agreed requirements for printing songs and setlist booklets for a three-ring binder.
 - [`CHANGELOG.md`](CHANGELOG.md): every notable change.
 - [`CLAUDE.md`](CLAUDE.md): project context and rules for AI assistants.
