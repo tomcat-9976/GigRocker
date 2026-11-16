@@ -6,7 +6,7 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
-## 2026-10-25: Private login (PR #9)
+## 2026-11-16: Private login (PR #9)
 
 Accounts and sharing, phase 1, step B. Phase 1 is now complete.
 
