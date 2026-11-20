@@ -35,7 +35,7 @@ export default function AuthGate({ children }) {
 
   return (
     <>
-      <header className="border-b border-slate-800 px-6">
+      <header className="border-b border-slate-800 px-6 print:hidden">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4 py-3 text-sm">
           <Link href="/" className="font-bold text-cyan-400">GigRocker</Link>
           <div className="flex items-center gap-4 text-slate-400">

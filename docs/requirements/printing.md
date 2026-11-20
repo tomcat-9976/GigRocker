@@ -1,6 +1,6 @@
 # Printing: requirements
 
-**Status:** decisions P1 to P10 agreed with Tom. P1 to P7 were agreed on 2026-11-16. The printing spike ([PR #12](https://github.com/tomcat-9976/GigRocker/pull/12), closed without merging) ran on 2026-11-20 and led to P8 to P10 and a change to P5. Next: step 3, "Print this song" (see [Build order](#build-order)).
+**Status:** decisions P1 to P10 agreed with Tom. P1 to P7 were agreed on 2026-11-16. The printing spike ([PR #12](https://github.com/tomcat-9976/GigRocker/pull/12), closed without merging) ran on 2026-11-20 and led to P8 to P10 and a change to P5. Step 3, "Print this song", is built (PR #14). Next: the setlist builder (see [Build order](#build-order)).
 
 This document records how GigRocker prints songs and setlist booklets, the decisions behind it, and the order it'll be built in. When a decision here changes, change this document in the same pull request.
 
@@ -35,14 +35,14 @@ On the stand, the binder lies open showing two pages side by side. A song must b
 
 This is the method the spike tested.
 
-1. The song is split into verses at blank lines. A verse is never split across columns or pages.
+1. The song is split into verses at blank lines. A verse is kept whole in a column, unless it's taller than a whole column.
 2. Every verse is laid out off screen at real size (CSS inches), in the right typeface, at each size and column width the fitting rule (P5) might use, and measured.
 3. The verses are placed in order into columns of the page's height, leaving room for the title on the first page. The first layout in the P5 order that holds them all is used.
 4. The pages are drawn at real size and printed as they are.
 
 In the spike, Chrome's PDF output had exactly the pages shown on screen in every test (five songs of 18 to 180 lines, several sizes and typefaces, both fitting orders), with every line on paper and no text past a margin. Tom's prints from Safari and Chrome matched too.
 
-**Known gap:** a single verse taller than a whole column can't be placed. In the prototype it ran past the bottom of the page. Step 3 must split such a verse between lines.
+**Verses taller than a column** (in the prototype they ran past the bottom of the page) are split between lines. A chord line or section name stays with the line after it. A song typed with no blank lines at all is one long verse, and splits the same way.
 
 ## What fits on a page
 
@@ -61,8 +61,8 @@ This does the printing groundwork before the setlist builder. The booklet itself
 | --- | --- | --- |
 | 1. This document | The decisions and the questions for the spike. | Done (PR #11) |
 | 2. Spike | A throwaway prototype that Tom printed from Safari and Chrome and tried on his stand and in his binder. Its results are recorded here. | Done (PR #12, closed without merging) |
-| 3. Print this song | A Print button on the song page, following P2 to P10, with size and typeface controls. The screen says how the song will print, for example "One page, one column, 16 point" or "Two pages: the printout starts with a blank page". Verses taller than a column are split. The add and edit forms show the P7 format as their example. Automated tests cover the layout rules. The prototype's layout code is the starting point, cleaned up. | Next |
-| 4. Setlist builder | Phase 2 of accounts and sharing. | |
+| 3. Print this song | A Print button on the song page, following P2 to P10, with size and typeface controls. The screen says how the song will print, for example "One page, one column, 16 point" or "Two pages: the printout starts with a blank page". Verses taller than a column are split. The add and edit forms show the P7 format as their example. Automated tests cover the layout rules. The prototype's layout code is the starting point, cleaned up. | Done (PR #14) |
+| 4. Setlist builder | Phase 2 of accounts and sharing. | Next |
 | 5. Setlist booklet | Phase 3: the songs of a setlist in order, with the list page, page numbers and blank pages (P6). | |
 
 ## Not planned

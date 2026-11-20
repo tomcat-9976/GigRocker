@@ -72,10 +72,13 @@ export default function SongsPage() {
             />
           </div>
           <textarea 
-            placeholder="Paste lyrics and chords here... (e.g., [G]Well, I'm a-runnin' down the road)" 
+            placeholder={'Paste or type the lyrics.\n\nVerse: [G] [D] [Em] [C]\nFirst line of the verse...'}
             value={lyrics} onChange={e => setLyrics(e.target.value)} rows="6"
-            className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white font-mono mb-4" required
+            className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white font-mono" required
           ></textarea>
+          <p className="mt-1 mb-4 text-xs text-slate-500">
+            Leave a blank line between verses. For chords, start a section with a line like  Verse: [G] [D] [Em] [C]
+          </p>
           <button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold px-4 py-2 rounded">
             Save Song to Library
           </button>

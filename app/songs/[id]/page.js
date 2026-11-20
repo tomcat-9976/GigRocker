@@ -26,6 +26,7 @@ function LyricsWithChords({ text }) {
 }
 
 const inputClass = 'w-full bg-slate-800 border border-slate-700 p-2 rounded text-white';
+const LYRICS_HINT = 'Leave a blank line between verses. For chords, start a section with a line like  Verse: [G] [D] [Em] [C]';
 const buttonClass = 'rounded px-4 py-2 font-bold disabled:opacity-50';
 
 export default function SongPage() {
@@ -162,6 +163,7 @@ export default function SongPage() {
             value={form.lyrics_and_chords} onChange={updateField('lyrics_and_chords')} rows="16"
             className={`${inputClass} mt-1 font-mono`} required
           />
+          <span className="block mt-1 text-xs text-slate-500">{LYRICS_HINT}</span>
         </label>
         <div className="flex gap-3">
           <button type="submit" disabled={busy} className={`${buttonClass} bg-cyan-500 hover:bg-cyan-600 text-slate-950`}>
@@ -188,6 +190,9 @@ export default function SongPage() {
           </div>
           {!confirmingDelete && (
             <div className="flex gap-3">
+              <Link href={`/songs/${id}/print`} className={`${buttonClass} border border-slate-700 hover:bg-slate-800`}>
+                Print
+              </Link>
               <button type="button" onClick={startEditing} className={`${buttonClass} bg-cyan-500 hover:bg-cyan-600 text-slate-950`}>
                 Edit
               </button>
