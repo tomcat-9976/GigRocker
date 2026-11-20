@@ -23,6 +23,7 @@ npm ci            # install exactly what package-lock.json specifies
 supabase start    # local Supabase in Docker (database + sign-in); see README "Running it on your own computer"
 npm run dev       # local server; needs .env.local (see .env.example): local Supabase values, or staging, never production
 npm run lint      # must pass before opening a pull request
+npm test          # must pass; tests for the print layout rules (Node's built-in test runner)
 npm run build     # must pass; dummy NEXT_PUBLIC_SUPABASE_* values are fine for a build check
 ```
 
@@ -66,6 +67,6 @@ Claude sessions running in the cloud can push to GitHub and use the GitHub REST 
 
 See "Known gaps" in [README.md](README.md) and "Not built yet" in [docs/architecture.md](docs/architecture.md).
 
-Agreed feature requirements live in `docs/requirements/`. Read the relevant one before planning a feature, and follow its decisions. If work needs a decision to change, raise it with Tom and update the document in the same pull request. Current: [accounts and sharing](docs/requirements/accounts-and-sharing.md) and [printing](docs/requirements/printing.md). Phase 1 of accounts, private login, is done. The printing spike is done (its results are in the printing document). Next is "Print this song", then phase 2, the setlist builder (see "Build order" in the printing document).
+Agreed feature requirements live in `docs/requirements/`. Read the relevant one before planning a feature, and follow its decisions. If work needs a decision to change, raise it with Tom and update the document in the same pull request. Current: [accounts and sharing](docs/requirements/accounts-and-sharing.md) and [printing](docs/requirements/printing.md). Phase 1 of accounts, private login, is done. "Print this song" is built (step 3 of the printing build order). Next is phase 2, the setlist builder. The setlist booklet (phase 3) should reuse `lib/printLayout.mjs` and extend its tests.
 
 Sign-in: email and password via Supabase Auth, with the session kept in the browser (supabase-js). `AuthGate` in `app/layout.js` guards every page. Data protection comes from RLS, never from the page. New tables need owner-based rules and tests from the start.

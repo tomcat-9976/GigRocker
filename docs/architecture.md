@@ -43,7 +43,10 @@ Both environments run the same code and the same migrations, but never share dat
 | `app/components/SignInForm.js` | Email and password sign-in. There is no sign-up form |
 | `app/page.js` | Home page, linking to the song library |
 | `app/songs/page.js` | Song library: add a song, list songs sorted by title, each linking to its page. Also contains a chord-transposing helper that isn't wired up yet |
-| `app/songs/[id]/page.js` | One song (the folder name `[id]` means the song's id is part of the address, `/songs/<id>`): lyrics with chords highlighted, Edit, and Delete with a confirmation step. Shows "Song not found" for a song that doesn't exist or isn't yours |
+| `app/songs/[id]/page.js` | One song (the folder name `[id]` means the song's id is part of the address, `/songs/<id>`): lyrics with chords highlighted, Print, Edit, and Delete with a confirmation step. Shows "Song not found" for a song that doesn't exist or isn't yours |
+| `app/songs/[id]/print/page.js` | Prints one song for a three-ring binder (`/songs/<id>/print`), with size, typeface and "Shrink to fit" controls. Lays every verse out off screen at real size, measures it, and draws US Letter pages that the browser's Print command prints. The app header and the controls are hidden on paper |
+| `lib/printLayout.mjs` | The print layout rules from [requirements/printing.md](requirements/printing.md): chord lines, verses, the fitting order, packing verses into columns, blank first pages for two-page songs. Kept apart from the page so they can be tested |
+| `lib/printLayout.test.mjs` | Automated tests for those rules, run with `npm test` (Node's built-in test runner) and in CI |
 | `lib/supabase.js` | Creates the Supabase client from the two environment variables. It also keeps the signed-in session |
 | `supabase/config.toml` | Supabase CLI settings (used for local tooling, not by the live site) |
 | `supabase/migrations/` | The database structure, as numbered SQL files. See [database.md](database.md) |
@@ -130,11 +133,11 @@ erDiagram
 
 - **Code:** pushing a branch makes Vercel build a preview against staging. Merging to `main` makes Vercel build and deploy production. Node 24 is pinned in `package.json`, and `package-lock.json` pins every dependency version, so both environments build identically.
 - **Database:** migrations are applied to staging with the Supabase CLI during development. Production is automatic: Supabase's GitHub integration ("Deploy to production") applies new migrations when a pull request merges into `main`, and reports the result as the "Supabase Preview" check on the merge commit. See [database.md](database.md).
-- **Checks:** every pull request runs GitHub Actions ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)). One job lints and builds the site. The other applies every migration to a throwaway database and runs the access tests in `supabase/tests`. No secrets are involved and neither database is touched. `main` is protected: it only accepts pull requests whose checks pass.
+- **Checks:** every pull request runs GitHub Actions ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)). One job lints the code, runs the automated tests in `lib/`, and builds the site. The other applies every migration to a throwaway database and runs the access tests in `supabase/tests`. No secrets are involved and neither database is touched. `main` is protected: it only accepts pull requests whose checks pass.
 
 ## Not built yet
 
 - Phases 2 to 5 of accounts and sharing: the setlist builder, simple sharing, collaborators and the open network. Phase 1, private login, is done. See [requirements/accounts-and-sharing.md](requirements/accounts-and-sharing.md).
-- Printing: a print layout for one song, then setlist booklets. See [requirements/printing.md](requirements/printing.md).
+- Setlist booklets (printing one song is built). See [requirements/printing.md](requirements/printing.md).
 - Password reset by email (for now, reset in the Supabase dashboard).
 - A decision on what data staging should hold once other people use the app (a scrubbed copy of production, or made-up sample data)

@@ -6,6 +6,26 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-11-20: Print a song (PR #14)
+
+Step 3 of the printing build order in `docs/requirements/printing.md`.
+
+### Added
+- **A Print button on each song page.** It opens a print view of the song for a three-ring binder:
+  - US Letter pages with a wider margin on the ring side that alternates sides from page to page.
+  - Section chord lines in bold, and nothing smaller than 14 point.
+  - The largest text that fits on one page, then on two facing pages. A two-page song printed on its own starts with a blank page.
+- **Size and typeface controls**, starting at 16 point sans serif, and a "Shrink to fit" switch. The screen says how the song will print and when the text was shrunk.
+- **Automated tests** for the print layout rules (`npm test`, Node's built-in test runner). CI runs them in the "Lint and build" job.
+
+### Changed
+- The add and edit forms show the chord-line format (`Verse: [G] [D] [Em] [C]`) instead of chords inside the words, with a reminder to leave blank lines between verses.
+- The app's header is hidden on paper.
+- README, `docs/architecture.md`, `CLAUDE.md` and the requirements status.
+
+### Release steps
+- None. No database changes.
+
 ## 2026-11-20: Printing spike results (PR #13)
 
 Documentation only. Nothing changes in the app.

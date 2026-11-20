@@ -1,8 +1,8 @@
 # GigRocker
 
-A web app for working musicians: a stage-ready song library with chords, a transposer, and (planned) a setlist builder and printable binder booklets. Built for a solo performer first, with collaboration with other musicians as a later goal.
+A web app for working musicians: a stage-ready song library with chords, printing for a three-ring binder, and (planned) a transposer, a setlist builder and setlist booklets. Built for a solo performer first, with collaboration with other musicians as a later goal.
 
-**Status:** early prototype. You sign in with an account created by the owner; there's no public sign-up. The song library can add, list, open, edit and delete your own songs; a song's page shows its lyrics with the chords highlighted. Transposing, setlists and booklets aren't built yet.
+**Status:** early prototype. You sign in with an account created by the owner; there's no public sign-up. The song library can add, list, open, edit and delete your own songs; a song's page shows its lyrics with the chords highlighted, and prints the song for a three-ring binder in a choice of size and typeface. Transposing, setlists and booklets aren't built yet.
 
 ## How it's built
 
@@ -31,7 +31,7 @@ Every change follows the same path, no matter how small:
 1. Create a branch from `main` with a descriptive name, such as `feature/setlist-builder` or `fix/song-form-error`.
 2. Make the change on that branch. Code, any database change, and any documentation update go together. Database changes have extra steps: see [docs/database.md](docs/database.md).
 3. Open a pull request. Two things happen automatically:
-   - GitHub runs the **checks** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)): lint, build, every migration applied to an empty database, and the database access tests.
+   - GitHub runs the **checks** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)): lint, the automated tests, build, every migration applied to an empty database, and the database access tests.
    - Vercel builds a **preview** of the branch, connected to the **staging** database.
 4. If a check fails, fix it on the branch; the checks run again on every push. Once every check is green, test the preview. If it's right, merge the pull request.
 5. Merging to `main` deploys to production: Vercel deploys the site, and Supabase applies any new database migrations.
@@ -68,6 +68,7 @@ Then create a test account. Open the local Supabase Studio at http://127.0.0.1:5
 supabase start               # if it isn't running already (quick after the first time)
 npm run dev                  # the app, at http://localhost:3000
 npm run lint                 # check the code for common mistakes
+npm test                     # run the automated tests (the print layout rules)
 ```
 
 Stop the app with Ctrl+C, and the local Supabase with `supabase stop`, which keeps its data.
