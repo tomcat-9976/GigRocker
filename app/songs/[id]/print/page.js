@@ -74,11 +74,14 @@ function Column({ blockIndexes, blocks, width }) {
   );
 }
 
-function describe(plan) {
-  if (plan.overflow) return `Longer than two pages even at ${MIN_SIZE} point in two columns: ${plan.pages} pages.`;
+function describe(plan, normalSize) {
   const layout = `${plan.cols === 1 ? 'one column' : 'two columns'} at ${plan.size} point`;
-  if (plan.pages === 1) return `Fits on one page: ${layout}.`;
-  return `Needs two pages: ${layout}.`;
+  let text;
+  if (plan.overflow) text = `Longer than two pages: ${plan.pages} pages, ${layout}.`;
+  else if (plan.pages === 1) text = `Fits on one page: ${layout}.`;
+  else text = `Needs two pages: ${layout}.`;
+  if (plan.size < normalSize) text += ` Shrunk from ${normalSize} point to fit. To print at ${normalSize} point, untick “Shrink to fit”.`;
+  return text;
 }
 
 export default function PrintSongPage() {
@@ -88,6 +91,7 @@ export default function PrintSongPage() {
   const [normalSize, setNormalSize] = useState(18);
   const [family, setFamily] = useState('sans');
   const [fitOrder, setFitOrder] = useState('columns');
+  const [shrink, setShrink] = useState(true);
   const [showMargins, setShowMargins] = useState(false);
   const [plan, setPlan] = useState(null);
   const measureRef = useRef(null);
@@ -103,9 +107,9 @@ export default function PrintSongPage() {
   }, [id]);
 
   const blocks = useMemo(() => (song ? toBlocks(song.lyrics_and_chords) : []), [song]);
-  const settingsKey = `${normalSize}|${family}|${fitOrder}`;
+  const settingsKey = `${normalSize}|${family}|${fitOrder}|${shrink}`;
   const measureSizes = [];
-  for (let s = normalSize; s >= MIN_SIZE; s--) measureSizes.push(s);
+  for (let s = normalSize; s >= (shrink ? MIN_SIZE : normalSize); s--) measureSizes.push(s);
 
   // Once the hidden copies below are on screen, measure them and choose a layout.
   useEffect(() => {
@@ -120,10 +124,10 @@ export default function PrintSongPage() {
           heights: [...group.querySelectorAll('[data-block]')].map(el => el.getBoundingClientRect().height),
         };
       };
-      setPlan({ key: settingsKey, ...choosePlan(blocks.length, normalSize, measure, fitOrder) });
+      setPlan({ key: settingsKey, ...choosePlan(blocks.length, normalSize, measure, fitOrder, shrink) });
     });
     return () => { active = false; };
-  }, [song, blocks, normalSize, fitOrder, settingsKey]);
+  }, [song, blocks, normalSize, fitOrder, shrink, settingsKey]);
 
   if (loadError) return <p className="p-8 text-red-400">Couldn’t load this song: {loadError}</p>;
   if (song === undefined) return <p className="p-8 text-slate-500">Loading…</p>;
@@ -168,6 +172,10 @@ export default function PrintSongPage() {
             </select>
           </label>
           <label className="flex items-center gap-2 text-sm text-slate-400 pb-2">
+            <input type="checkbox" checked={shrink} onChange={e => setShrink(e.target.checked)} />
+            Shrink to fit
+          </label>
+          <label className="flex items-center gap-2 text-sm text-slate-400 pb-2">
             <input type="checkbox" checked={showMargins} onChange={e => setShowMargins(e.target.checked)} />
             Show margins
           </label>
@@ -177,7 +185,7 @@ export default function PrintSongPage() {
         </div>
         {ready && (
           <div className="mt-3 text-sm text-slate-300 space-y-1">
-            <p data-testid="plan">{describe(plan)}</p>
+            <p data-testid="plan">{describe(plan, normalSize)}</p>
             <p>
               Printout: {sides.length} {sides.length === 1 ? 'page' : 'pages'} on {sheets} {sheets === 1 ? 'sheet' : 'sheets'}.
               {sides.length > 1 && ' Print on both sides. The first page is left blank so the song’s pages face each other in the binder.'}
