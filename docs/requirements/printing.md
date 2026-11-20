@@ -1,6 +1,6 @@
 # Printing: requirements
 
-**Status:** decisions P1 to P7 agreed with Tom on 2026-11-16. Next: the printing spike (see [Build order](#build-order)).
+**Status:** decisions P1 to P9 agreed with Tom. P1 to P7 were agreed on 2026-11-16. The printing spike ([PR #12](https://github.com/tomcat-9976/GigRocker/pull/12), closed without merging) ran on 2026-11-20 and led to P8 and P9 and a change to P5. Next: step 3, "Print this song" (see [Build order](#build-order)).
 
 This document records how GigRocker prints songs and setlist booklets, the decisions behind it, and the order it'll be built in. When a decision here changes, change this document in the same pull request.
 
@@ -17,65 +17,66 @@ On the stand, the binder lies open showing two pages side by side. A song must b
 | # | Decision | Why |
 | --- | --- | --- |
 | P1 | **US Letter, portrait, printed on both sides, kept in a three-ring binder.** No folded or stapled booklets. | A folded booklet means rearranging pages on each sheet (page 8 beside page 1, and so on) with a page count that's a multiple of 4. A binder needs none of that. |
-| P2 | **A wider inside margin for the punched holes** (about 1 inch), on the left of right-hand pages and the right of left-hand pages. About 0.6 inch elsewhere. | Text stays clear of the holes on both sides of the sheet. The app knows which side each page falls on (P6), so it sets these margins itself, whatever the browser supports. |
+| P2 | **A wider inside margin for the punched holes** (1 inch), on the left of right-hand pages and the right of left-hand pages. 0.6 inch elsewhere. | Text stays clear of the holes on both sides of the sheet. The app knows which side each page falls on (P6), so it sets these margins itself, whatever the browser supports. Confirmed on punched paper in the spike. |
 | P3 | **Chords typed inside the words are printed above them.** A chord in brackets inside a line (`[G]Well, I'm a-[D]runnin'`) is printed above the syllable it's typed in front of. Songs without chords print as plain lyrics. Not needed yet, because chords are written once per section for now (P7), but this is how such songs will print. | Easier to read at a glance than chords inside the line. Because each chord is tied to its syllable, the two stay together when a line wraps in a narrow column. |
 | P4 | **Nothing on a song page is printed smaller than 14 point**, chords included. | Readable from a music stand. |
-| P5 | **Fitting a song on one page:** first one column at the normal size; if it doesn't fit, two columns; then smaller text, step by step, down to 14 point; and only then two pages (P6). | One page means no page turns. Two columns come before smaller text, so the text stays as large as possible. |
-| P6 | **A two-page song always starts on a left-hand page**, so both pages are visible at once in the open binder. If the next free page is a right-hand page, the app inserts a blank page first. One-page songs can fall on either side. | No page turn in the middle of a song. The app counts pages itself to decide where blanks go, so it never relies on browsers honoring "start on a left page", which they don't do reliably. |
-| P7 | **For now, each section's chords are written once**, on their own line at the start of the section, for example `Verse: [G] [D] [Em] [C]`. A line holding only a label and chords prints as a line of chords, picked out from the lyrics. Chords stay in brackets so the transposer can change their key. | Quick to write for songs Tom already knows, enough for other musicians to follow, and it adds only one line per section. Chords over every line (P3) can come later for songs that need them. |
+| P5 | **Fitting a song: the largest text that fits.** Starting at the normal size (P8), try one column, then two columns; if neither fits, go down a point and try again, down to 14 point. Only if nothing fits on one page, do the same on two pages (P6). *Changed 2026-11-20.* It was "two columns first, then smaller text". | One page means no page turns. In the spike, two columns at 16 to 18 point wrapped most lyric lines, because a column is only 3.3 inches wide. Tom compared both orders on paper and chose this one. |
+| P6 | **A two-page song always starts on a left-hand page**, so both pages are visible at once in the open binder. If the next free page is a right-hand page, the app inserts a blank page first. So a two-page song printed on its own starts with a blank page. One-page songs can fall on either side. | No page turn in the middle of a song. The app counts pages itself to decide where blanks go, so it never relies on browsers honoring "start on a left page", which they don't do reliably. Confirmed in the binder in the spike. |
+| P7 | **For now, each section's chords are written once**, on their own line at the start of the section, for example `Verse: [G] [D] [Em] [C]`. A chord line has an optional label ending in a colon, then chords in brackets. Bar lines (`\|`), slashes, dashes and repeat marks such as `x2` or `(2x)` may go between the chords. On paper the brackets are dropped and the line is bold, with the chords in a dark color that still prints dark in black and white. A section name on its own line, such as `Chorus`, prints in bold. Chords stay in brackets in the song so the transposer can change their key. | Quick to write for songs Tom already knows, enough for other musicians to follow, and it adds only one line per section. Chords over every line (P3) can come later for songs that need them. The format and its look were tried in the spike. |
+| P8 | **The normal size is 16 point, in a plain sans-serif typeface** (Helvetica on a Mac, with Arial as the fallback). | Tom compared sizes and typefaces on his stand in the spike. |
+| P9 | **Printing uses the browser's own Print command.** The app doesn't make PDFs for now. Each page is laid out at real size with its own margins, and tells the browser to use US Letter with no margins of its own. | In the spike it printed correctly from both Safari and Chrome on Tom's Mac, with the page count matching what the app showed. A PDF can still be saved from the print dialog when one is wanted, for example to send to another musician. |
 
-**On each song page:** title, artist, key and tempo, plus a small page number in the outside corner. In a setlist booklet, also the song's position in the set and the gig notes for that song. Chords are printed in the gig's key once the transposer works (`setlist_items.transposed_key`).
+**On each song page:** title, artist, key and tempo, plus a small page number in the outside corner when a song has more than one page. In a setlist booklet, also the song's position in the set and the gig notes for that song. Chords are printed in the gig's key once the transposer works (`setlist_items.transposed_key`).
 
 **A setlist booklet** starts with a page listing the set. That's page 1, a right-hand page, so the first song starts on page 2 on the left.
 
-## An early estimate of what fits
+## How the app knows a song fits
 
-This is rough arithmetic for US Letter with the margins in P2 and 14 point chords and words. The spike will measure it properly with real songs.
+This is the method the spike tested.
 
-| Layout | Lyrics-only lines that fit | Lines with chords above that fit | Characters per line before it wraps |
-| --- | --- | --- | --- |
-| One column | about 34 | about 19 | about 70 |
-| Two columns | about 68 | about 37 | about 34 |
+1. The song is split into verses at blank lines. A verse is never split across columns or pages.
+2. Every verse is laid out off screen at real size (CSS inches), in the right typeface, at each size and column width the fitting rule (P5) might use, and measured.
+3. The verses are placed in order into columns of the page's height, leaving room for the title on the first page. The first layout in the P5 order that holds them all is used.
+4. The pages are drawn at real size and printed as they are.
 
-Fewer lines fit when long lines wrap.
+In the spike, Chrome's PDF output had exactly the pages shown on screen in every test (five songs of 18 to 180 lines, several sizes and typefaces, both fitting orders), with every line on paper and no text past a margin. Tom's prints from Safari and Chrome matched too.
 
-- **Lyrics-only songs, and songs with each section's chords once (P7),** should nearly always fit on one page, often in one column. P7 adds only one line per section.
-- **Songs with chords over every line (P3)** are another matter. Many songs are 40 lines or more once repeated choruses are written out, so those would often need two pages (P6).
+**Known gap:** a single verse taller than a whole column can't be placed. In the prototype it ran past the bottom of the page. Step 3 must split such a verse between lines.
 
-So with P7, two columns and two-page spreads should be the exception, a safety net for unusually long songs.
+## What fits on a page
+
+These figures count every printed line, section labels and chord lines included, with the usual space between verses and the title on the page.
+
+- **One column:** about 29 lines at 16 point (P8), and about 34 at 14 point. Line height doesn't depend on the typeface, and a one-column line holds about 60 to 70 characters, so these figures hold for Tom's Mac. In the spike, a song of 42 printed lines needed two pages even at 14 point.
+- **Two columns** help only when lines are short. A column holds about 30 to 34 characters, so a typical lyric line of 35 to 45 characters wraps onto two lines.
+
+So songs of up to about 30 printed lines fit on one page, and longer ones usually take two facing pages (P6). That's why P6 matters, and why writing a repeated chorus once (see the open questions) would help.
 
 ## Build order
 
 This does the printing groundwork before the setlist builder. The booklet itself still comes in phase 3 of [accounts and sharing](accounts-and-sharing.md), after the setlist builder, as agreed.
 
-| Step | What it delivers | Merged? |
+| Step | What it delivers | Status |
 | --- | --- | --- |
-| 1. This document | The decisions above and the questions the spike must answer. | Yes |
-| 2. Spike | A throwaway prototype on its own branch. It prints songs from Tom's library: a short and a long lyrics-only song, and a song with each section's chords once (P7). Tom prints them on his own printer and tries them on his stand. The results and decisions are recorded here. | No: only this document changes |
-| 3. Print this song | A Print button on the song page, following P2 to P7 and the spike's decisions. The add and edit forms show the P7 format as their example. | Yes |
-| 4. Setlist builder | Phase 2 of accounts and sharing, designed with what the spike taught. | Yes |
-| 5. Setlist booklet | Phase 3: the songs of a setlist in order, with the list page, page numbers and blank pages (P6). | Yes |
-
-### What the spike must answer
-
-- **How to print.** The browser's own Print command, or a PDF the app makes itself. Browsers differ in their margins and scaling, and in the date and web address they add to each page. A PDF comes out the same everywhere and is easy to hand to another musician. Test both in Safari and Chrome on Tom's Mac.
-- **The normal text size and typeface.** 14 point is the minimum (P4). Is something larger better when it fits? Does a typewriter-style (monospaced) font read better than an ordinary one?
-- **How the app knows a song fits.** It has to measure the song laid out at page size, and the measurement must match the paper.
-- **The real numbers.** How many of Tom's songs fit on one page, how many need two columns, and how many need two pages.
+| 1. This document | The decisions and the questions for the spike. | Done (PR #11) |
+| 2. Spike | A throwaway prototype that Tom printed from Safari and Chrome and tried on his stand and in his binder. Its results are recorded here. | Done (PR #12, closed without merging) |
+| 3. Print this song | A Print button on the song page, following P2 to P9. The screen says how the song will print, for example "One page, one column, 16 point" or "Two pages: the printout starts with a blank page". Verses taller than a column are split. The add and edit forms show the P7 format as their example. Automated tests cover the layout rules. The prototype's layout code is the starting point, cleaned up. | Next |
+| 4. Setlist builder | Phase 2 of accounts and sharing. | |
+| 5. Setlist booklet | Phase 3: the songs of a setlist in order, with the list page, page numbers and blank pages (P6). | |
 
 ## Not planned
 
 - Folded or stapled booklets, A4 paper, landscape pages (P1).
+- PDFs made by the app (P9), unless browser printing stops being good enough.
 - Chord diagrams (finger charts).
 - Printing for a collaborator's instrument, such as capo or transposed parts.
 
 ## Open questions
 
-- **The exact format of a chord line (P7).** Are bar lines (`| [G] | [D] |`), repeats (`x2`) and lines of chords with no label allowed? Settle this in the spike.
-- **Songs copied from websites** usually have chords on their own line above the words, not in brackets. If chords over every line (P3) are wanted later, the app could convert such songs when they're pasted in.
+- **Size and typeface controls.** Should "Print this song" let Tom pick another size or typeface for one printout, or always use P8? The spike's controls were for testing.
+- **Repeated choruses.** Should a chorus be written out once and then referred to (a line saying "Chorus"), with the app printing just that label for repeats? That would keep more songs to one page.
+- **Songs longer than two pages.** The prototype continues on further pages, starting on a left-hand page. Should the app also point out such songs so they can be shortened?
+- **Blank pages (P6).** Completely blank (as in the spike), or with a light "Notes" heading for pencil notes?
 - **What else keeps everyone together?** Key, tempo and the song's structure (for example "Intro, Verse, Chorus, Verse, Chorus, Bridge, Chorus, Outro") may matter as much as the chords.
-- **Repeated choruses.** Should a chorus be written out once and then referred to (a line saying "Chorus"), with the app printing just that label for repeats? That saves a lot of space (see the estimate).
-- **Songs longer than two pages.** The leaning is to continue on further pages, still starting on a left-hand page, and have the app point out such songs so they can be shortened.
-- **Blank pages (P6).** Completely blank, or with a light "Notes" heading for pencil notes?
-- **Section labels** (Verse, Chorus, Bridge). Print them as typed, or pick them out in bold?
-- **The screen.** Should the song page on screen use the same chords-above layout? Decide in step 3.
+- **Songs copied from websites** usually have chords on their own line above the words, not in brackets. If chords over every line (P3) are wanted later, the app could convert such songs when they're pasted in.
+- **The screen.** Should the song page on screen look like the printout? Decide in step 3.
