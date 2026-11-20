@@ -48,6 +48,9 @@ jobs:
       - name: Check the code for common mistakes
         run: npm run lint
 
+      - name: Run the automated tests (print layout rules)
+        run: npm test
+
       - name: Build the site
         run: npm run build
         env:
