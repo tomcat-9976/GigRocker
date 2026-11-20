@@ -6,6 +6,19 @@ Notable changes to GigRocker, newest first. Each entry says what changed, why, a
 
 Database structure changes live in `supabase/migrations/` (see [docs/database.md](docs/database.md)). Entries here say which migrations a release includes.
 
+## 2026-11-20: Printing spike results (PR #13)
+
+Documentation only. Nothing changes in the app.
+
+### Changed
+- `docs/requirements/printing.md` records what the printing spike (PR #12, a prototype that was closed without merging) found when Tom printed from Safari and Chrome and tried the pages on his stand and in his binder:
+  - **P5 changed:** a song now gets the largest text that fits, trying one column before two at each size. Two columns at 16 to 18 point wrapped most lyric lines.
+  - **P8 (new):** the normal size is 16 point, in a plain sans-serif typeface.
+  - **P9 (new):** printing uses the browser's own Print command; the app doesn't make PDFs for now.
+  - **P10 (new):** printing a song has size and typeface controls, starting at 16 point sans serif, and a "Shrink to fit" switch.
+  - The chord-line format (P7), how the app measures whether a song fits, measured figures for what fits on a page (about 29 printed lines at 16 point in one column), and the plan for "Print this song".
+- `CLAUDE.md` and the accounts and sharing requirements: the spike is done, and "Print this song" is next.
+
 ## 2026-11-16: Printing requirements (PR #11)
 
 Documentation only. Nothing changes in the app.
